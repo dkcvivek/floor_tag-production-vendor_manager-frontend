@@ -1,12 +1,13 @@
-import Navbar from "@/app/components/Navbar";
+import { ReactNode } from "react";
 
-function layout({children}: {children: React.ReactNode}) {
+function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className='flex flex-col min-h-screen'>
-      <Navbar />
-      {children}
+    <div className="min-h-screen">
+      <main className="pt-16">
+        {children}
+      </main>
     </div>
-  )
+  );
 }
 
-export default layout
+export default Layout;

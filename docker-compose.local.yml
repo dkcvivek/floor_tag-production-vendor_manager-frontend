@@ -1,0 +1,25 @@
+volumes:
+  node_modules: {}
+
+services:
+  node: &node
+    build:
+      context: .
+      dockerfile: ./compose/local/node/Dockerfile
+    image: floor_tag_production_vendor_manager_node_local
+    container_name: floor_tag_production_vendor_manager_local_node_live
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - ./.envs/.local/.node
+    ports:
+      - "42300:3000"
+
+  node_stable:
+    <<: *node
+    container_name: floor_tag_production_vendor_manager_local_node_stable
+    env_file:
+      - ./.envs/.local/.node
+    volumes: []
+    ports:
+      - "42301:3000"

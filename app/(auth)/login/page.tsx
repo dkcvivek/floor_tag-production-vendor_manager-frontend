@@ -4,14 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import useDebounce from "@/app/hooks/useDebounce";
+import { apiCall } from "@/app/api/apiConfig";
 
 type Errors = {
   email?: string;
   password?: string;
-};
-
-const handleSubmit = (e: any) => {
-  e.preventDefault();
 };
 
 export default function LoginPage() {
@@ -30,8 +27,14 @@ export default function LoginPage() {
     setOtp("");
   };
 
-  const handleSubmit = () => {
-    
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+
+    } catch (error) {
+      
+    }
   };
 
   // const debouncedValue = useDebounce(formData, 300);
@@ -103,6 +106,7 @@ export default function LoginPage() {
                 </button>
 
                 <button
+                  type="button"
                   className="flex-1 h-11 rounded bg-[#1e90ff] text-white font-semibold"
                   onClick={handleSubmit}
                 >

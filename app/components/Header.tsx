@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const Navbar = () => {
+const Header = () => {
   return (
     <header className="h-16 md:h-28 flex items-center px-3 md:px-10 relative">
         <Image
@@ -23,4 +23,4 @@ const Navbar = () => {
   )
 }
 
-export default Navbar;
+export default Header;

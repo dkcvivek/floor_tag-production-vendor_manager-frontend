@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
-import SubHeader from "../components/SubHeader";
+import Navbar from "@/app/components/Navbar"
 
 function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <main className="pt-16">
-        <SubHeader header="CREATE CHECKER ACCOUNT"/>
+        <Navbar />
         {children}
       </main>
     </div>

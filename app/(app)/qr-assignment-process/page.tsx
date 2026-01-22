@@ -1,4 +1,5 @@
 "use client";
+import Navbar from "@/app/components/Navbar";
 import { useState, useEffect } from "react";
 
 const PARTS = ["Top", "Bottom", "Pair"];
@@ -25,6 +26,7 @@ export default function Page() {
 
   return (
     <>
+      <Navbar />
       <div
         className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all ${
           modal ? "blur-sm" : ""

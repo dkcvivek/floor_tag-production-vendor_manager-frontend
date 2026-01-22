@@ -29,9 +29,6 @@ const data = [
 const Page = ({ buttonLabel, buttonHref }: PageProps) => {
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar
-        title="QR ASSIGNMENT PROCESS"
-      />
       <main className="px-3 py-4 space-y-4 pb-24">
         {data.map((item, index) => (
           <div

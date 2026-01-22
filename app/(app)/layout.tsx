@@ -1,14 +1,12 @@
 import { ReactNode } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Navbar from "@/app/components/Navbar"
 
 function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <main className="pt-16">
-        <Header/>
+        <Navbar />
         {children}
-        <Footer/>
       </main>
     </div>
   );

@@ -1,10 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import useDebounce from "@/app/hooks/useDebounce";
-import { apiCall } from "@/app/api/apiConfig";
+import { useState } from "react";
 
 type Errors = {
   email?: string;

@@ -26,13 +26,13 @@ export default function Page() {
 
   return (
     <>
-      <Navbar />
+      <Navbar title="QR ASSIGNMENT PROCESS" />
       <div
         className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all ${
           modal ? "blur-sm" : ""
         }`}
       >
-        <div className="w-full max-w-[420px] space-y-4">
+        <div className="w-full max-w-105 space-y-4">
           <h1 className="text-blue-600 font-bold tracking-wide text-lg">
             BLACKTHERMAL
           </h1>
@@ -225,7 +225,7 @@ function ModalBase({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div
         className={`${bg}
-        w-[90%] max-w-[360px] min-h-[300px]
+        w-[90%] max-w-90 min-h-75
         rounded-lg text-white p-6
         relative
         flex items-center justify-center`}

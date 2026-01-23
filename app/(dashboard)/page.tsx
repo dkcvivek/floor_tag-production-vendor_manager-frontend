@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const buttonsInfo = [
   { label: "CREATE CHECKER ACCOUNT", src: "create-checker" },
-  { label: "ALL ISSUES", src: "all-issues" },
+  { label: "ALL ISSUES", src: "issue-list" },
   { label: "ASSIGN CHECKER", src: "assign-checker" },
   { label: "SEE REPORTS", src: "see-reports" },
   { label: "Start QR Assignment Process", src: "qr-assignment" },

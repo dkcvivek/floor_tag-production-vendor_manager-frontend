@@ -32,9 +32,8 @@ export default function Page() {
     <>
       <Navbar title="QR ISSUES" />
 
-      <div className="mx-auto w-full max-w-[430px] bg-gray-50 px-4 pt-4 pb-[80px]">
+      <div className="mx-auto w-full max-w-107.5 bg-gray-50 px-4 pt-4 pb-20">
         
-        {/* PRODUCT */}
         <div className="rounded-xl border border-gray-300 bg-white p-4">
           <h1 className="text-[13px] font-extrabold uppercase text-blue-700 leading-snug">
             FREE EST BAG GOLDEN FLUFFY RED ORANGE WITH TRIMS
@@ -46,7 +45,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* DURATION */}
         <div className="mt-4 rounded-xl border border-gray-300 bg-white p-4">
           <label className="mb-2 block text-xs font-semibold text-gray-600">
             DURATION
@@ -73,7 +71,6 @@ export default function Page() {
           </div>
         </div>
 
-        {/* TIME SLOTS */}
         <div className="mt-4 rounded-xl border border-gray-300 bg-white p-4">
           <p className="mb-3 text-xs font-semibold text-gray-600">
             TIME SLOTS
@@ -83,9 +80,9 @@ export default function Page() {
             {slots.map((slot, i) => (
               <button
                 key={i}
-                onClick={() => router.push("/see-reports")}
+                onClick={() => router.push("/all-report")}
                 className="
-                  h-[84px] rounded-lg border border-gray-300 bg-gray-50
+                  h-21 rounded-lg border border-gray-300 bg-gray-50
                   px-2 py-2 flex flex-col items-center justify-between
                   active:bg-gray-100
                 "
@@ -96,7 +93,7 @@ export default function Page() {
 
                 <span
                   className={`
-                    flex h-9 min-w-[36px] items-center justify-center
+                    flex h-9 min-w-9 items-center justify-center
                     rounded-md text-xs font-bold
                     ${
                       slot.value > 0

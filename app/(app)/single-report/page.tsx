@@ -1,12 +1,10 @@
-import Navbar from "@/app/components/Navbar";
 import IssuesByColor from "@/app/components/IssuesByColor";
+import Navbar from "@/app/components/Navbar";
 
 const page = () => {
-
-
   return (
     <>
-      <Navbar title="QR ISSUES" />
+      <Navbar title={"REMAINING PIECES"} />
 
       <IssuesByColor />
     </>

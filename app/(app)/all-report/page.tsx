@@ -1,13 +1,15 @@
 "use client";
 
 import Navbar from "@/app/components/Navbar";
+import { useRouter } from "next/navigation";
 
 export default function SeeReportsPage() {
+  const router =useRouter();
   return (
     <>
       <Navbar title="REPORTS" />
 
-      <div className="mx-auto w-full max-w-[430px] bg-gray-50 px-4 pt-4 pb-[80px]">
+      <div className="mx-auto w-full max-w-107.5 bg-gray-50 px-4 pt-4 pb-20">
         <div className="mb-4">
           <h1 className="text-sm font-extrabold uppercase leading-snug text-blue-700">
             FREE EST BAG GOLDEN FLUFFY RED ORANGE WITH TRIMS
@@ -64,6 +66,7 @@ export default function SeeReportsPage() {
                 <tr
                   key={i}
                   className="border-t border-gray-200 even:bg-gray-50"
+                  onClick={()=> router.push("/single-report")}
                 >
                   <td className="px-2 py-2 border-r border-gray-200 text-center text-gray-500">
                     {row[0]}
@@ -106,7 +109,7 @@ const InfoRow = ({
 );
 
 const Badge = ({ value }: { value: string }) => (
-  <span className="inline-flex min-w-[34px] justify-center rounded-md bg-blue-600 px-2 py-1 text-xs font-extrabold text-white">
+  <span className="inline-flex min-w-8.5 justify-center rounded-md bg-blue-600 px-2 py-1 text-xs font-extrabold text-white">
     {value}
   </span>
 );

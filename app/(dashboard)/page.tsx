@@ -6,7 +6,7 @@ const buttonsInfo = [
   { label: "CREATE CHECKER ACCOUNT", src: "create-checker" },
   { label: "ALL ISSUES", src: "issue-list" },
   { label: "ASSIGN CHECKER", src: "assign-checker" },
-  { label: "SEE REPORTS", src: "see-reports" },
+  { label: "SEE REPORTS", src: "all-report" },
   { label: "Start QR Assignment Process", src: "qr-assignment" },
   { label: "Start QR Packaging Process", src: "qr-packaging" },
 ];

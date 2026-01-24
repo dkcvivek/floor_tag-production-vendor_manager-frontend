@@ -1,12 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useRef } from "react";
 import Navbar from "@/app/components/Navbar";
 import ConnectorBox from "./ConnectorBox";
 import { StatesData } from "../types/types";
 
-const Page = ({ isIssue=false }: { isIssue?: boolean }) => {
+const Page = ({ isIssue = false }: { isIssue?: boolean }) => {
   const searchParams = useSearchParams();
 
   const color = searchParams.get("color") || "RED";
@@ -75,12 +74,14 @@ const Page = ({ isIssue=false }: { isIssue?: boolean }) => {
               <span className="font-semibold text-red-700">STATUS: </span>Issue
             </div>
 
-            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm"> 
+            <div className="rounded-lg border border-gray-200 px-3 py-2 text-sm">
               <span className="font-semibold">TYPE: </span>Lorem, ipsum dolor.
             </div>
 
             <div className="rounded-lg border border-gray-200 text-sm">
-              <div className="font-semibold p-2 border-b border-gray-200">REASON: </div>
+              <div className="font-semibold p-2 border-b border-gray-200">
+                REASON:{" "}
+              </div>
 
               <div className="px-3 py-2">
                 Lorem ipsum dolor, sit amet consectetur

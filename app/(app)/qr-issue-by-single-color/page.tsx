@@ -1,9 +1,10 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 
 const page = () => {
+  const router= useRouter();
   const searchParams = useSearchParams();
   const color = searchParams.get("color") || "RED";
   const size = searchParams.get("size") || "L";
@@ -64,7 +65,7 @@ const page = () => {
                       {code}
                     </td>
                     <td className="px-3 py-2 text-center">
-                      <button className="bg-blue-500 text-white text-xs px-3 py-1 rounded-md active:scale-95">
+                      <button className="bg-blue-500 text-white text-xs px-3 py-1 rounded-md active:scale-95" onClick={()=> router.push(`/piece-detail?code=${code}`)}>
                         OPEN
                       </button>
                     </td>

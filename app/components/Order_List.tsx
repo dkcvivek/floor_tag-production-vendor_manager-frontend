@@ -29,7 +29,7 @@ const data = [
 const Page = ({ buttonLabel, buttonHref }: PageProps) => {
   return (
     <div className="min-h-screen bg-gray-100">
-      <main className="px-3 py-4 space-y-4 pb-24">
+      <main className="px-3 py-4 space-y-4 mb-16">
         {data.map((item, index) => (
           <div
             key={index}

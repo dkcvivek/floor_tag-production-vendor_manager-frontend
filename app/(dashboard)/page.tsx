@@ -15,7 +15,7 @@ function HomePage() {
   return (
     <>
       <div className="flex flex-col justify-evenly min-h-screen px-5 gap-4 pt-20">
-        <Link href={"scan-qr"} className="w-full bg-blue-500 text-white font-semibold py-4 px-8 rounded-xl shadow-sm flex items-center justify-between gap-4">
+        <Link href={"scan"} className="w-full bg-blue-500 text-white font-semibold py-4 px-8 rounded-xl shadow-sm flex items-center justify-between gap-4">
           <div className="flex-1 text-4xl">SCAN QR</div>
 
           <Image src={"/qr.png"} alt="" width={127} height={127} />

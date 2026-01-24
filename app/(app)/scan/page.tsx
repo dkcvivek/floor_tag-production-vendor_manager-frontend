@@ -43,7 +43,7 @@ const ScanQR = () => {
     speechSynthesis.speak(utter);
   }, [showModal, modalMessage]);
 
-  return (
+  return ( 
     <>
       {showModal ? (
         <>

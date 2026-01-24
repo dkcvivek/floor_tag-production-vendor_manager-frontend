@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Header = () => {
   return (
-    <header className="fixed top-0 left-0 z-1000 h-16 w-full flex items-center px-4 bg-gray-200">
+    <header className="fixed top-0 left-0 z-40 h-16 w-full flex items-center px-4 bg-gray-200">
       <div className="shrink-0">
         <Image
           src="/logo.svg"

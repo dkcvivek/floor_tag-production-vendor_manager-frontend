@@ -1,115 +1,130 @@
 "use client";
 
 import Navbar from "@/app/components/Navbar";
+import { useRouter } from "next/navigation";
 
-export default function SeeReportsPage() {
+type Slot = {
+  time: string;
+  value: number;
+};
+
+const slots: Slot[] = [
+  { time: "11:00 am", value: 0 },
+  { time: "11:15 am", value: 12 },
+  { time: "11:30 am", value: 25 },
+  { time: "11:45 am", value: 38 },
+
+  { time: "10:00 am", value: 0 },
+  { time: "10:15 am", value: 0 },
+  { time: "10:30 am", value: 0 },
+  { time: "10:45 am", value: 0 },
+
+  { time: "9:00 am", value: 0 },
+  { time: "9:15 am", value: 0 },
+  { time: "9:30 am", value: 0 },
+  { time: "9:45 am", value: 0 },
+];
+
+export default function Page() {
+  const router = useRouter();
+
   return (
     <>
-      <Navbar title="REPORTS" />
+      <Navbar title="QR ISSUES" />
 
-      <div className="mx-auto w-full max-w-[430px] bg-gray-50 px-4 pt-4 pb-[80px] space-y-4">
-        <h1 className="text-sm font-extrabold uppercase leading-snug text-blue-700">
-          FREE EST BAG GOLDEN FLUFFY RED ORANGE WITH TRIMS
-        </h1>
+      <div className="mx-auto w-full max-w-[430px] bg-gray-50 px-4 pt-4 pb-[80px]">
+        
+        {/* PRODUCT */}
+        <div className="rounded-xl border border-gray-300 bg-white p-4">
+          <h1 className="text-[13px] font-extrabold uppercase text-blue-700 leading-snug">
+            FREE EST BAG GOLDEN FLUFFY RED ORANGE WITH TRIMS
+          </h1>
 
-        <div className="rounded-xl bg-white p-4 shadow-sm space-y-3">
-          <InfoRow label="Vendor" value="NS" />
-          <InfoRow label="Order Quantity" value="1300" />
-
-          <div className="pt-3 border-t border-gray-100">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-1">
-              Period
-            </p>
-            <div className="text-xs text-gray-700 space-y-0.5">
-              <div>19 Jan 2026 · 11:15 AM</div>
-              <div>19 Jan 2026 · 11:30 AM</div>
-            </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <InfoCard label="VENDOR" value="NS" />
+            <InfoCard label="FIRST SCAN" value="19 Jan 2026 · 11:05" />
           </div>
         </div>
 
-        <div className="rounded-xl bg-white shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-              Quality Check Report
-            </p>
+        {/* DURATION */}
+        <div className="mt-4 rounded-xl border border-gray-300 bg-white p-4">
+          <label className="mb-2 block text-xs font-semibold text-gray-600">
+            DURATION
+          </label>
+
+          <div className="relative">
+            <select
+              className="
+                w-full appearance-none rounded-lg border border-gray-300
+                bg-white px-4 py-3 text-sm font-semibold text-gray-800
+                focus:border-blue-500 focus:ring-1 focus:ring-blue-200
+              "
+            >
+              <option>15 min</option>
+              <option>30 min</option>
+              <option>1 hour</option>
+              <option>4 hours</option>
+              <option>1 day</option>
+            </select>
+
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+              ▼
+            </span>
           </div>
+        </div>
 
-          <table className="w-full text-xs border-collapse">
-            <thead className="bg-gray-100 text-gray-600">
-              <tr>
-                <th className="px-3 py-2 text-center w-10 border-r border-gray-200">
-                  #
-                </th>
-                <th className="px-3 py-2 text-left border-r border-gray-200">
-                  Check
-                </th>
-                <th className="px-3 py-2 text-center w-16 border-r border-gray-200">
-                  Pass
-                </th>
-                <th className="px-3 py-2 text-center w-16">Fail</th>
-              </tr>
-            </thead>
+        {/* TIME SLOTS */}
+        <div className="mt-4 rounded-xl border border-gray-300 bg-white p-4">
+          <p className="mb-3 text-xs font-semibold text-gray-600">
+            TIME SLOTS
+          </p>
 
-            <tbody>
-              {[
-                ["1", "No bubbling", "12", "1"],
-                ["2", "Packaging", "9", "0"],
-                ["3", "Labeling", "4", "0"],
-                ["4", "Transporting", "0", "0"],
-              ].map((row, i) => (
-                <tr
-                  key={i}
-                  className="border-t border-gray-200 even:bg-gray-50"
+          <div className="grid grid-cols-4 gap-3">
+            {slots.map((slot, i) => (
+              <button
+                key={i}
+                onClick={() => router.push("/see-reports")}
+                className="
+                  h-[84px] rounded-lg border border-gray-300 bg-gray-50
+                  px-2 py-2 flex flex-col items-center justify-between
+                  active:bg-gray-100
+                "
+              >
+                <span className="text-[11px] font-semibold text-gray-700">
+                  {slot.time}
+                </span>
+
+                <span
+                  className={`
+                    flex h-9 min-w-[36px] items-center justify-center
+                    rounded-md text-xs font-bold
+                    ${
+                      slot.value > 0
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-400"
+                    }
+                  `}
                 >
-                  <td className="px-3 py-2 text-center text-gray-400 border-r border-gray-200">
-                    {row[0]}
-                  </td>
-
-                  <td className="px-3 py-2 font-medium text-gray-800 border-r border-gray-200">
-                    {row[1]}
-                  </td>
-
-                  <td className="px-3 py-2 text-center border-r border-gray-200">
-                    <Pill type="pass" value={row[2]} />
-                  </td>
-
-                  <td className="px-3 py-2 text-center">
-                    <Pill type="fail" value={row[3]} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  {slot.value}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </>
   );
 }
 
-const InfoRow = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) => (
-  <div className="flex items-center justify-between gap-4">
-    <span className="text-[11px] font-semibold uppercase text-gray-400">
-      {label}
-    </span>
-    <span className="text-sm font-bold text-gray-800 text-right">{value}</span>
-  </div>
-);
-
-const Pill = ({ value, type }: { value: string; type: "pass" | "fail" }) => (
-  <span
-    className={`inline-flex min-w-[34px] justify-center rounded-md px-2 py-1 text-xs font-bold
-      ${
-        type === "pass"
-          ? "bg-green-100 text-green-700"
-          : "bg-red-100 text-red-700"
-      }`}
-  >
-    {value}
-  </span>
-);
+const InfoCard = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <div className="rounded-lg border border-gray-300 bg-white px-3 py-2">
+      <p className="text-[10px] font-semibold uppercase text-gray-500">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm font-bold text-gray-800">
+        {value}
+      </p>
+    </div>
+  );
+};

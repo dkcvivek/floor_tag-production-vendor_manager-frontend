@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { useRouter } from "next/navigation";
+import PieceDetail from "@/app/components/piece-detail";
 // import { useGeneralApiCall } from "@/apiServices/useGenralApiCall"; 
 
 const ScanQR = () => {
@@ -13,6 +14,8 @@ const ScanQR = () => {
   const [facingMode, setFacingMode] = useState<"environment" | "user">(
     "environment",
   );
+
+  const isPieceDetail= true;
 
   // const { getApi } = useGeneralApiCall();
 
@@ -43,6 +46,12 @@ const ScanQR = () => {
     speechSynthesis.speak(utter);
   }, [showModal, modalMessage]);
 
+  if(isPieceDetail){
+    return(
+      <PieceDetail isIssue={true} />
+    )
+  }
+
   return ( 
     <>
       {showModal ? (
@@ -68,7 +77,7 @@ const ScanQR = () => {
         </>
       ) : (
         <>
-          <div className="fixed inset-0 z-50 bg-black">
+          <div className="fixed inset-0 z-1000 bg-black">
             {/* 1. Top Bar Controls (Floating over camera) */}
             <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-start z-20">
               {/* Cancel / Back Button */}

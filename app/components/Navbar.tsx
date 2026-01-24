@@ -12,7 +12,7 @@ const Navbar = ({ title }: NavbarProps) => {
   const router = useRouter();
 
   return (
-    <header className="sticky top-16 h-14 bg-[#1E90FF] flex items-center px-3 text-white">
+    <header className="sticky top-16 h-14 bg-[#1E90FF] flex items-center px-3 text-white z-999">
       <div
         className="flex items-center gap-1 cursor-pointer"
         onClick={() => router.back()}

@@ -18,7 +18,7 @@ function HomePage() {
         <Link href={"scan"} className="w-full bg-blue-500 text-white font-semibold py-4 px-8 rounded-xl shadow-sm flex items-center justify-between gap-4">
           <div className="flex-1 text-4xl">SCAN QR</div>
 
-          <Image src={"/qr.png"} alt="" width={127} height={127} />
+          <Image src={"/images/qr.png"} alt="" width={127} height={127} />
         </Link>
 
         {buttonsInfo.map((item, index) => {

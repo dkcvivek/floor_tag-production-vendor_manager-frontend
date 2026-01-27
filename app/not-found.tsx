@@ -26,7 +26,7 @@ export default function NotFound() {
 
           <div className="relative w-96 h-96 ml-1">
             <Image
-              src="/404-2.png"
+              src="/images/404-2.png"
               alt="404 illustration"
               fill
               priority

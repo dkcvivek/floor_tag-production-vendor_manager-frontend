@@ -16,7 +16,7 @@ const Header = () => {
 
       <div className="flex-1 flex justify-center">
         <Image
-          src="/signal.svg"
+          src="/images/signal.svg"
           alt="Signal"
           width={32}
           height={32}

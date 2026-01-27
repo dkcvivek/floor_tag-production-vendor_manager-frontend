@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import Navbar from "@/app/components/Navbar"
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 

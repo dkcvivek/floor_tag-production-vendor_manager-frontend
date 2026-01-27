@@ -28,7 +28,7 @@ const page = () => {
     <>
       <Navbar title="Assign Checker" />
 
-      <div className="p-4">
+      <div className="p-4 pb-16">
         <div className="max-w-4xl border border-gray-300 rounded-sm">
           <div className="bg-gray-600 text-white px-4 py-3 text-xl font-semibold">
             #1 Check point

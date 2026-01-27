@@ -28,7 +28,7 @@ export default function Page() {
     <>
       <Navbar title="QR ASSIGNMENT PROCESS" />
       <div
-        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all ${
+        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all pb-16 ${
           modal ? "blur-sm" : ""
         }`}
       >

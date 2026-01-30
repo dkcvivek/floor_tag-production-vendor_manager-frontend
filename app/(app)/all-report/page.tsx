@@ -2,12 +2,51 @@
 
 import Navbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { apiCall } from "@/app/api/apiConfig";
+import { EligibleStyle } from "@/app/types/types";
+import Order_List from "@/app/components/Order_List";
 
 export default function SeeReportsPage() {
-  const router =useRouter();
+  const router = useRouter();
+  const [orders, setOrders] = useState<EligibleStyle[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       const res = await apiCall<EligibleStyle[]>(
+  //         "GET",
+  //         "/api/v1/vendor-manager/assign-checkers/eligible-styles/",
+  //       );
+  //       setOrders(res.data);
+  //     } catch (err) {
+  //       setError((err as Error).message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchOrders();
+  // }, []);
+
   return (
     <>
       <Navbar title="REPORTS" />
+
+      <Order_List
+        orders={orders}
+        loading={loading}
+        error={error}
+        buttonLabel="See Reports"
+        getKey={(item) => item.vendor_order_id}
+        getTitle={(item) => `ORDER ID: ${item.vendor_order_id}`}
+        getDate={(item) => item.earliest_ship_date}
+        getQuantity={(item) => item.order_quantity}
+        getStyleName={(item) => item.style_name}
+        getButtonHref={(item) => `/assign-checker/${item.vendor_order_id}`}
+      />
 
       <div className="mx-auto w-full max-w-107.5 bg-gray-50 px-4 pt-4 pb-20">
         <div className="mb-4">
@@ -66,7 +105,7 @@ export default function SeeReportsPage() {
                 <tr
                   key={i}
                   className="border-t border-gray-200 even:bg-gray-50"
-                  onClick={()=> router.push("/single-report")}
+                  onClick={() => router.push("/single-report")}
                 >
                   <td className="px-2 py-2 border-r border-gray-200 text-center text-gray-500">
                     {row[0]}

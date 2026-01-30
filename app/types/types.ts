@@ -25,3 +25,10 @@ export interface StatesData {
   size: string;
   stages: Stage[];
 }
+
+export type EligibleStyle = {
+  vendor_order_id: string;
+  order_quantity: number;
+  earliest_ship_date: string;
+  style_name: string;
+};

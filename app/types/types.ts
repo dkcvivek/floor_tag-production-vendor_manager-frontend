@@ -14,9 +14,9 @@ export type CreateCheckerFormError = {
 export type StageStatus = "PASSED" | "FAILED";
 
 export interface Stage {
-  id: number;          
-  name: string;        
-  status: StageStatus; 
+  id: number;
+  name: string;
+  status: StageStatus;
 }
 
 export interface StatesData {
@@ -26,9 +26,16 @@ export interface StatesData {
   stages: Stage[];
 }
 
-export type EligibleStyle = {
+export type Style = {
   vendor_order_id: string;
   order_quantity: number;
   earliest_ship_date: string;
   style_name: string;
+};
+
+export type LoginResponseData = {
+  name: string,
+  company: string,
+  role: string,
+  token: string,
 };

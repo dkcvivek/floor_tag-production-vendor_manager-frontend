@@ -35,7 +35,7 @@ function Order_List<T>({
   }
 
   if (error) {
-    return <p className="p-4 text-sm text-red-600">{error}</p>;
+    return <p className="p-4 text-sm text-red-600 text-center">{error}</p>;
   }
 
   return (
@@ -78,7 +78,6 @@ function Order_List<T>({
 
 export default Order_List;
 
-// "use client";
 
 // import Link from "next/link";
 

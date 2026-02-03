@@ -26,7 +26,7 @@ const slots: Slot[] = [
 ];
 
 export default function Page() {
-  const router = useRouter();
+  const router= useRouter();
 
   return (
     <>
@@ -80,7 +80,7 @@ export default function Page() {
             {slots.map((slot, i) => (
               <button
                 key={i}
-                onClick={() => router.push("/all-report")}
+                onClick={() => router.push("/single-report")}
                 className="
                   h-21 rounded-lg border border-gray-300 bg-gray-50
                   px-2 py-2 flex flex-col items-center justify-between

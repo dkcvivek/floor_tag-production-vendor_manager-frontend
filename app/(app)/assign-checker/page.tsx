@@ -4,17 +4,17 @@ import { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import Order_List from "@/app/components/Order_List";
 import { apiCall } from "@/app/api/apiConfig";
-import { EligibleStyle } from "@/app/types/types";
+import { Style } from "@/app/types/types";
 
 export default function Page() {
-  const [orders, setOrders] = useState<EligibleStyle[]>([]);
+  const [orders, setOrders] = useState<Style[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await apiCall<EligibleStyle[]>(
+        const res = await apiCall<Style[]>(
           "GET",
           "/api/v1/vendor-manager/assign-checkers/eligible-styles/",
         );

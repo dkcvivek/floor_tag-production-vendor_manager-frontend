@@ -1,4 +1,4 @@
-import type { ApiReponse } from "@/app/types/apiResponse";
+import { ApiResponse } from "../types/apiResponse";
 import { axiosInstance } from "./axiosInstance";
 
 export const apiCall = async <T>(
@@ -6,17 +6,16 @@ export const apiCall = async <T>(
   url: string,
   data?: Record<string, unknown> | FormData | null,
   params?: Record<string, unknown>,
-  headers?: Record<string, string | undefined>,
-): Promise<ApiReponse<T>> => {
+): Promise<ApiResponse<T>> => {
   const isFormData = data instanceof FormData;
 
-  const response = await axiosInstance.request<ApiReponse<T>>({
+  const response = await axiosInstance.request<ApiResponse<T>>({
     method,
     url,
     data: isFormData ? data : data,
     params,
-    headers: isFormData ? undefined : headers,
   });
 
   return response.data;
 };
+

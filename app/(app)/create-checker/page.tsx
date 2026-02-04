@@ -13,7 +13,7 @@ function CreateChecker() {
   const [name, setName] = useState<string>("");
 
   const [otpStatus, setOtpStatus] = useState<boolean>(false);
-  const [isOtpCorrect, setIsOtpCorrect] = useState<boolean>(false);
+  const [isOtpCorrect, setIsOtpCorrect] = useState<boolean>();
 
   const [errors, setErrors] = useState<CreateCheckerFormError>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,19 +40,24 @@ function CreateChecker() {
     setErrors({});
 
     try {
-      await apiCall(
-        "POST",
-        "/api/v1/vendor-manager/user/phone-number-exists/",
-        {
+      await Promise.all([
+        apiCall("POST", "/api/v1/vendor-manager/user/phone-number-exists/", {
           phone_number: mobile,
-        },
-      );
+        }),
+        apiCall("POST", "/api/v1/vendor-manager/otp/send/", {
+          phone_number: mobile, 
+        }),
+      ]);
 
       setOtpStatus(true);
     } catch (err) {
+      const message =
+        (err as Error)?.message || "Something went wrong. Please try again.";
+
       setErrors({
-        mobile: (err as Error).message || "Mobile number already exists",
+        mobile: message,
       });
+
     } finally {
       setLoading(false);
     }
@@ -135,7 +140,7 @@ function CreateChecker() {
               disabled={!mobile || !name || loading}
               className="w-full py-3 text-lg font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "PLEASE WAIT..." : "SEND OTP"}
+              {loading ? "PLEASE WAIT..." : "Create Account"}
             </button>
           </div>
         </>

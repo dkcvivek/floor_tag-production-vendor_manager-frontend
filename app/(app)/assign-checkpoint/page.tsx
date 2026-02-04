@@ -126,17 +126,17 @@ const CheckpointCard = ({ step }: Props) => {
         #{step.position} Checkpoint
       </div>
 
-      <div className="p-4 space-y-4">
-        <div className="grid grid-cols-[1fr_2fr] gap-4">
+      <div className="px-1 py-4 space-y-4">
+        <div className="grid grid-cols-[1fr_2fr] gap-x-2 gap-y-4">
           {Object.entries(step.tracking_step_data).map(([key, value]) => {
             if (!value) return null;
 
             return (
               <div key={key} className="contents">
-                <div className="bg-gray-50 p-3 capitalize">
+                <div className="bg-gray-50 p-3 capitalize text-wrap">
                   {key.replaceAll("_", " ")}
                 </div>
-                <div className="bg-gray-50 p-3">{value}</div>
+                <div className="bg-gray-50 p-3 text-xs text-wrap">{value}</div>
               </div>
             );
           })}

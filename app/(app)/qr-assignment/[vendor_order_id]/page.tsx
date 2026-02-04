@@ -3,7 +3,7 @@
 import { apiCall } from "@/app/api/apiConfig";
 import Navbar from "@/app/components/Navbar";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const PARTS = ["Top", "Bottom", "Pair"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -16,6 +16,17 @@ type QROrderDetail = {
   style_name: string;
 };
 
+type Checker = {
+  checker_id: string;
+  checker_name: string;
+};
+
+type TrackingStep = {
+  tracking_step_id: string;
+  position: number;
+  assigned_operators: Checker[];
+};
+
 export default function Page() {
   const { vendor_order_id } = useParams<{ vendor_order_id: string }>();
 
@@ -24,11 +35,16 @@ export default function Page() {
   const [color, setColor] = useState("N/A");
   const [colors, setColors] = useState(DEFAULT_COLORS);
   const [customColor, setCustomColor] = useState("#000000");
-
   const [order, setOrder] = useState<QROrderDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
+  const [trackingStep, setTrackingStep] = useState<TrackingStep | null>(null);
+  const [eligibleCheckers, setEligibleCheckers] = useState<Checker[]>([]);
+  const [assignedCheckers, setAssignedCheckers] = useState<Checker[]>([]);
+  const [selectedChecker, setSelectedChecker] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<"success" | "error" | null>(null);
 
   useEffect(() => {
@@ -38,13 +54,30 @@ export default function Page() {
   useEffect(() => {
     if (!vendor_order_id) return;
 
-    const fetchOrder = async () => {
+    const init = async () => {
       try {
-        const res = await apiCall<QROrderDetail>(
+        setLoading(true);
+
+        const orderRes = await apiCall<QROrderDetail>(
           "GET",
           `/api/v1/vendor-manager/assign-qrs/order/${vendor_order_id}/`,
         );
-        setOrder(res.data);
+        setOrder(orderRes.data);
+
+        const stepsRes = await apiCall<TrackingStep[]>(
+          "GET",
+          `/api/v1/vendor-manager/assign-checkers/order/${vendor_order_id}/`,
+        );
+
+        const step = stepsRes.data[0];
+        setTrackingStep(step);
+        setAssignedCheckers(step.assigned_operators ?? []);
+
+        const checkerRes = await apiCall<Checker[]>(
+          "GET",
+          `/api/v1/vendor-manager/assign-checkers/list-checkers/${step.tracking_step_id}/`,
+        );
+        setEligibleCheckers(checkerRes.data);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -52,12 +85,71 @@ export default function Page() {
       }
     };
 
-    fetchOrder();
+    init();
   }, [vendor_order_id]);
 
+  const handleAddChecker = async () => {
+    if (!selectedChecker || !trackingStep) return;
+
+    try {
+      setActionLoading(true);
+
+      await apiCall(
+        "POST",
+        `/api/v1/vendor-manager/assign-checkers/order/${vendor_order_id}/assign-operator/`,
+        {
+          checker_id: selectedChecker,
+          tracking_step_id: trackingStep.tracking_step_id,
+        },
+      );
+
+      const checker = eligibleCheckers.find(
+        (c) => c.checker_id === selectedChecker,
+      );
+      if (!checker) return;
+
+      setAssignedCheckers((p) => [...p, checker]);
+      setEligibleCheckers((p) =>
+        p.filter((c) => c.checker_id !== checker.checker_id),
+      );
+      setSelectedChecker("");
+    } catch (err) {
+      setError((err as Error).message);
+      setModal("error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRemoveChecker = async (checker: Checker) => {
+    if (!trackingStep) return;
+
+    try {
+      setActionLoading(true);
+
+      await apiCall(
+        "POST",
+        `/api/v1/vendor-manager/assign-checkers/order/${vendor_order_id}/remove-operator/`,
+        {
+          checker_id: checker.checker_id,
+          tracking_step_id: trackingStep.tracking_step_id,
+        },
+      );
+
+      setAssignedCheckers((p) =>
+        p.filter((c) => c.checker_id !== checker.checker_id),
+      );
+      setEligibleCheckers((p) => [...p, checker]);
+    } catch (err) {
+      setError((err as Error).message);
+      setModal("error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleStart = () => {
-    const isSuccess = Math.random() > 0.5;
-    setModal(isSuccess ? "success" : "error");
+    setModal("success");
   };
 
   if (loading) return <p className="p-4">Loading...</p>;
@@ -67,8 +159,9 @@ export default function Page() {
   return (
     <>
       <Navbar title="QR ASSIGNMENT PROCESS" />
+
       <div
-        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all pb-16 ${
+        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 pb-16 ${
           modal ? "blur-sm" : ""
         }`}
       >
@@ -94,7 +187,7 @@ export default function Page() {
               <button
                 onClick={() => {
                   if (!colors.includes(customColor)) {
-                    setColors((prev) => [...prev, customColor]);
+                    setColors((p) => [...p, customColor]);
                     setColor(customColor);
                   }
                 }}
@@ -111,18 +204,48 @@ export default function Page() {
 
           <Card label="Assigned Checker:">
             <div className="flex gap-2 flex-wrap">
-              <Chip text="HRIDESH" />
-              <Chip text="SHIV KUMAR" />
+              {assignedCheckers.length === 0 && (
+                <p className="text-xs text-gray-500">
+                  No checkers assigned yet
+                </p>
+              )}
+
+              {assignedCheckers.map((c) => (
+                <span
+                  key={c.checker_id}
+                  className="flex items-center gap-1 bg-blue-500 text-white text-xs px-3 py-1 rounded-full"
+                >
+                  {c.checker_name}
+                  <button
+                    onClick={() => handleRemoveChecker(c)}
+                    disabled={actionLoading}
+                    className="ml-1"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
             </div>
 
             <div className="flex gap-2 mt-2">
-              <select className="flex-1 h-9 rounded-md px-2 text-sm shadow-sm">
-                <option>Select Checker</option>
+              <select
+                value={selectedChecker}
+                onChange={(e) => setSelectedChecker(e.target.value)}
+                className="flex-1 h-9 rounded-md px-2 text-sm shadow-sm"
+                disabled={actionLoading}
+              >
+                <option value="">Select Checker</option>
+                {eligibleCheckers.map((c) => (
+                  <option key={c.checker_id} value={c.checker_id}>
+                    {c.checker_name}
+                  </option>
+                ))}
               </select>
 
               <button
-                disabled
-                className="px-3 h-9 rounded-md bg-gray-200 text-gray-400 text-xs font-semibold"
+                onClick={handleAddChecker}
+                disabled={!selectedChecker || actionLoading}
+                className="px-3 h-9 rounded-md bg-blue-500 text-white text-xs font-semibold disabled:bg-gray-300"
               >
                 ADD CHECKER
               </button>
@@ -137,7 +260,6 @@ export default function Page() {
           </button>
 
           <DataTable title="CURRENT PROCESS" rows={[["Red", "S", "500"]]} />
-
           <DataTable
             title="History"
             rows={[
@@ -150,7 +272,6 @@ export default function Page() {
         </div>
       </div>
 
-      {/* MODALS */}
       {modal === "error" && <ErrorModal onClose={() => setModal(null)} />}
       {modal === "success" && <SuccessModal onClose={() => setModal(null)} />}
     </>
@@ -195,33 +316,28 @@ function Select({
   );
 }
 
-function Chip({ text }: { text: string }) {
-  return (
-    <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full shadow-sm">
-      {text} ×
-    </span>
-  );
-}
-
 function DataTable({ title, rows }: { title: string; rows: string[][] }) {
   return (
     <div className="space-y-2">
       <p className="text-blue-600 font-semibold text-sm">{title}</p>
+
       <div className="bg-white rounded-md shadow-sm overflow-hidden">
-        <table className="w-full text-xs">
+        <table className="w-full text-xs table-fixed">
           <thead className="bg-gray-50">
             <tr>
-              <th className="p-2 text-left">Color</th>
-              <th className="p-2 text-left">Size</th>
-              <th className="p-2 text-right">Pieces</th>
+              <th className="p-2">Color</th>
+              <th className="p-2">Size</th>
+              <th className="p-2">Pieces</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} className="border-t border-gray-100">
-                <td className="p-2">{row[0]}</td>
-                <td className="p-2">{row[1]}</td>
-                <td className="p-2 text-right">{row[2]}</td>
+            {rows.map((r, i) => (
+              <tr key={i} className="border-t border-gray-300">
+                {r.map((c, j) => (
+                  <td key={j} className="p-2 text-center">
+                    {c}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -234,8 +350,8 @@ function DataTable({ title, rows }: { title: string; rows: string[][] }) {
 function ErrorModal({ onClose }: { onClose: () => void }) {
   return (
     <ModalBase bg="bg-red-600" onClose={onClose}>
-      <p className="text-3xl font-bold text-center leading-snug">
-        Can not assign checker as he is on leave
+      <p className="text-2xl font-bold text-center">
+        Cannot assign checker (on leave)
       </p>
     </ModalBase>
   );
@@ -244,10 +360,7 @@ function ErrorModal({ onClose }: { onClose: () => void }) {
 function SuccessModal({ onClose }: { onClose: () => void }) {
   return (
     <ModalBase bg="bg-green-600" onClose={onClose}>
-      <div className="flex flex-col items-center justify-center text-center">
-        <p className="text-4xl font-bold mb-4">Assigning checker</p>
-        <p className="text-lg opacity-90">Loading...</p>
-      </div>
+      <p className="text-2xl font-bold text-center">Process Started</p>
     </ModalBase>
   );
 }
@@ -264,19 +377,14 @@ function ModalBase({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div
-        className={`${bg}
-        w-[90%] max-w-90 min-h-75
-        rounded-lg text-white p-6
-        relative
-        flex items-center justify-center`}
+        className={`${bg} w-[90%] max-w-90 min-h-60 rounded-lg text-white p-6 relative flex items-center justify-center`}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-2xl font-bold leading-none"
+          className="absolute top-4 right-4 text-2xl font-bold"
         >
           ×
         </button>
-
         {children}
       </div>
     </div>

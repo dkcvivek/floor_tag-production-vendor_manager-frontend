@@ -3,28 +3,29 @@
 import { useEffect, useState } from "react";
 import { apiCall } from "@/app/api/apiConfig";
 import { useParams } from "next/navigation";
+import { TrackingStep } from "@/app/types/types";
 
-type TrackingStepData = {
-  step?: string;
-  location?: string;
-  what_to_check?: string;
-  how_to_check?: string;
-};
+// type TrackingStepData = {
+//   step?: string;
+//   location?: string;
+//   what_to_check?: string;
+//   how_to_check?: string;
+// };
 
 type Checker = {
   checker_id: string;
   checker_name: string;
 };
 
-type Step = {
-  tracking_step_id: string;
-  position: number;
-  assigned_operators: Checker[];
-  tracking_step_data: TrackingStepData;
-};
+// type Step = {
+//   tracking_step_id: string;
+//   position: number;
+//   assigned_operators: Checker[];
+//   tracking_step_data: TrackingStepData;
+// };
 
 type Props = {
-  step: Step;
+  step: TrackingStep;
 };
 
 const CheckpointCard = ({ step }: Props) => {
@@ -122,21 +123,21 @@ const CheckpointCard = ({ step }: Props) => {
 
   return (
     <div className="max-w-4xl border border-gray-300 rounded-sm">
-      <div className="bg-gray-600 text-white px-4 py-3 text-xl font-semibold">
-        #{step.position} Checkpoint
+      <div className="bg-gray-500 text-white px-4 py-3 text-xl font-semibold">
+        #{step.position} {step.type==="operation_point" ? "Operation Point" : "Checkpoint"} 
       </div>
 
       <div className="px-1 py-4 space-y-4">
-        <div className="grid grid-cols-[1fr_2fr] gap-x-2 gap-y-4">
+        <div className="flex flex-col gap-y-4">
           {Object.entries(step.tracking_step_data).map(([key, value]) => {
             if (!value) return null;
 
             return (
-              <div key={key} className="contents">
-                <div className="bg-gray-50 p-3 capitalize text-wrap">
-                  {key.replaceAll("_", " ")}
+              <div key={key} className="flex items-stretch gap-2">
+                <div className="bg-gray-50 p-3 flex items-center text-sm w-1/3 border border-gray-100">
+                  <span className="first-letter:uppercase">{key.replaceAll("_", " ")}</span>
                 </div>
-                <div className="bg-gray-50 p-3 text-xs text-wrap">{value}</div>
+                <div className="bg-gray-50 p-3 text-sm w-2/3 min-w-0 whitespace-normal wrap-break-word border border-gray-100">{value}</div>
               </div>
             );
           })}
@@ -167,11 +168,11 @@ const CheckpointCard = ({ step }: Props) => {
             ))}
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <select
               value={selectedChecker}
               onChange={(e) => setSelectedChecker(e.target.value)}
-              className="flex-1 border px-3 py-2 rounded-sm"
+              className="flex-1 border border-gray-100 px-3 py-2 rounded-sm text-sm"
               disabled={actionLoading}
             >
               <option value="">Select Checker...</option>
@@ -185,7 +186,7 @@ const CheckpointCard = ({ step }: Props) => {
             <button
               onClick={handleAddChecker}
               disabled={!selectedChecker || actionLoading}
-              className="px-4 py-2 bg-blue-500 text-white disabled:bg-gray-300"
+              className="px-4 py-2 bg-blue-500 text-white disabled:bg-gray-300 disabled:text-black text-sm"
             >
               {actionLoading ? "Processing..." : "Add Checker"}
             </button>

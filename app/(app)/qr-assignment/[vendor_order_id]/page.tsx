@@ -4,28 +4,106 @@ import { apiCall } from "@/app/api/apiConfig";
 import Navbar from "@/app/components/Navbar";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import {
+  ApiHistoryResponse,
+  ApiProcessResponse,
+  AssignQrsOrderResponse,
+  HistoryItem,
+  mapHistoryResponse,
+  mapProcessResponse,
+  mapStyleResponse,
+  Process,
+  Style,
+} from "../mapper/assignmentQRsOrder.mapper";
 
-const PARTS = ["Top", "Bottom", "Pair"];
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-const DEFAULT_COLORS = ["Red", "Orange", "Blue", "Pink", "Black", "White"];
+// const DEFAULT_COLORS = ["Red", "Orange", "Blue", "Pink", "Black", "White"];
 
-type QROrderDetail = {
-  vendor_order_id: string;
-  vendor_order_date: string;
-  vendor_order_quantity: number;
-  style_name: string;
+const mockCurrentProcess: Process = {
+  id: 101,
+  stylePartId: "SP-001",
+  stylePartName: "Top",
+  ticketColor: "Red",
+  vendorColor: "Red",
+  size: "S",
+  pieces: 500,
+  operators: [
+    {
+      id: "OP-01",
+      name: "NS",
+    },
+    {
+      id: "OP-02",
+      name: "RK",
+    },
+  ],
 };
 
+const mockProcessHistory: HistoryItem[] = [
+  {
+    id: 95,
+    stylePartId: "SP-001",
+    stylePartName: "Top",
+    ticketColor: "Red",
+    vendorColor: "Red",
+    size: "S",
+    status: "completed",
+    pieces: 450,
+    loggedAt: new Date("2024-12-28T09:30:00"),
+    operators: [
+      {
+        id: "OP-01",
+        name: "NS",
+      },
+    ],
+  },
+  {
+    id: 88,
+    stylePartId: "SP-001",
+    stylePartName: "Top",
+    ticketColor: "Blue",
+    vendorColor: "Blue",
+    size: "M",
+    status: "completed",
+    pieces: 520,
+    loggedAt: new Date("2024-12-26T16:10:00"),
+    operators: [
+      {
+        id: "OP-02",
+        name: "RK",
+      },
+      {
+        id: "OP-03",
+        name: "AM",
+      },
+    ],
+  },
+  {
+    id: 73,
+    stylePartId: "SP-002",
+    stylePartName: "Bottom",
+    ticketColor: "Green",
+    vendorColor: "Green",
+    size: "L",
+    status: "failed",
+    pieces: 300,
+    loggedAt: new Date("2024-12-22T11:45:00"),
+    operators: [],
+  },
+];
+
 export default function Page() {
-  const { vendor_order_id } = useParams<{ vendor_order_id: string }>();
+  const params = useParams();
+  const vendorOrderId = params?.vendor_order_id;
 
   const [part, setPart] = useState("N/A");
   const [size, setSize] = useState("N/A");
   const [color, setColor] = useState("N/A");
-  const [colors, setColors] = useState(DEFAULT_COLORS);
-  const [customColor, setCustomColor] = useState("#000000");
+  // const [colors, setColors] = useState(DEFAULT_COLORS);
+  // const [customColor, setCustomColor] = useState("#000000");
 
-  const [order, setOrder] = useState<QROrderDetail | null>(null);
+  const [order, setOrder] = useState<Style | null>(null);
+  const [currentProcess, setCurrentProcess] = useState<Process | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,15 +114,31 @@ export default function Page() {
   }, [modal]);
 
   useEffect(() => {
-    if (!vendor_order_id) return;
+    if (typeof vendorOrderId !== "string") return;
 
-    const fetchOrder = async () => {
+    const fetchAll = async () => {
       try {
-        const res = await apiCall<QROrderDetail>(
-          "GET",
-          `/api/v1/vendor-manager/assign-qrs/order/${vendor_order_id}/`,
-        );
-        setOrder(res.data);
+        setLoading(true);
+        setError(null);
+
+        const [orderRes, processRes, historyRes] = await Promise.all([
+          apiCall<AssignQrsOrderResponse>(
+            "GET",
+            `/api/v1/vendor-manager/assign-qrs/order/${vendorOrderId}/`,
+          ),
+          apiCall<ApiProcessResponse>(
+            "GET",
+            `/api/v1/vendor-manager/assign-qrs/order/${vendorOrderId}/current-process/`,
+          ),
+          apiCall<ApiHistoryResponse>(
+            "GET",
+            `/api/v1/vendor-manager/assign-qrs/order/${vendorOrderId}/process-history/`,
+          ),
+        ]);
+
+        setOrder(mapStyleResponse(orderRes.data));
+        setCurrentProcess(mapProcessResponse(processRes.data));
+        setHistory(mapHistoryResponse(historyRes.data));
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -52,8 +146,18 @@ export default function Page() {
       }
     };
 
-    fetchOrder();
-  }, [vendor_order_id]);
+    fetchAll();
+  }, [vendorOrderId]);
+
+  const partOptions = order?.parts.map((p) => p.name) ?? [];
+
+  const colorOptions = order?.colorSizes
+    ? Array.from(new Set(order.colorSizes.map((cs) => cs.vendorColor)))
+    : [];
+
+  const sizeOptions = order?.colorSizes
+    ? Array.from(new Set(order.colorSizes.map((cs) => cs.size.toUpperCase())))
+    : [];
 
   const handleStart = () => {
     const isSuccess = Math.random() > 0.5;
@@ -63,10 +167,10 @@ export default function Page() {
   if (loading) return <p className="p-4">Loading...</p>;
   if (error) return <p className="p-4 text-red-600">{error}</p>;
   if (!order) return null;
-
   return (
     <>
       <Navbar title="QR ASSIGNMENT PROCESS" />
+
       <div
         className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all pb-16 ${
           modal ? "blur-sm" : ""
@@ -74,17 +178,17 @@ export default function Page() {
       >
         <div className="w-full max-w-105 space-y-4">
           <h1 className="text-blue-600 font-bold tracking-wide text-lg">
-            {order.style_name}
+            {order?.styleName}
           </h1>
 
           <Card label="CHOOSE PARTS">
-            <Select value={part} onChange={setPart} options={PARTS} />
+            <Select value={part} onChange={setPart} options={partOptions} />
           </Card>
 
           <Card label="CHOOSE COLOR">
-            <Select value={color} onChange={setColor} options={colors} />
+            <Select value={color} onChange={setColor} options={colorOptions} />
 
-            <div className="flex items-center gap-3 mt-3">
+            {/* <div className="flex items-center gap-3 mt-3">
               <input
                 type="color"
                 value={customColor}
@@ -102,11 +206,11 @@ export default function Page() {
               >
                 Add custom color
               </button>
-            </div>
+            </div> */}
           </Card>
 
           <Card label="CHOOSE SIZE">
-            <Select value={size} onChange={setSize} options={SIZES} />
+            <Select value={size} onChange={setSize} options={sizeOptions} />
           </Card>
 
           <Card label="Assigned Checker:">
@@ -136,17 +240,19 @@ export default function Page() {
             START
           </button>
 
-          <DataTable title="CURRENT PROCESS" rows={[["Red", "S", "500"]]} />
+          {/* Static UI */}
+          {mockCurrentProcess && (
+            <ProcessDetailsTable
+              process={mockCurrentProcess}
+              onMarkComplete={() => {
+                console.log("Mark completed:", mockCurrentProcess.id);
+              }}
+            />
+          )}
 
-          <DataTable
-            title="History"
-            rows={[
-              ["Red", "S", "500"],
-              ["Orange", "XL", "200"],
-              ["Blue", "M", "1000"],
-              ["Pink", "L", "250"],
-            ]}
-          />
+          {mockProcessHistory && (
+            <ProcessHistoryTable history={mockProcessHistory} />
+          )}
         </div>
       </div>
 
@@ -203,30 +309,208 @@ function Chip({ text }: { text: string }) {
   );
 }
 
-function DataTable({ title, rows }: { title: string; rows: string[][] }) {
+interface ProcessDetailsTableProps {
+  process: Process;
+  onMarkComplete?: () => void;
+}
+
+export function ProcessDetailsTable({
+  process,
+  onMarkComplete,
+}: ProcessDetailsTableProps) {
   return (
-    <div className="space-y-2">
-      <p className="text-blue-600 font-semibold text-sm">{title}</p>
-      <div className="bg-white rounded-md shadow-sm overflow-hidden">
-        <table className="w-full text-xs">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-2 text-left">Color</th>
-              <th className="p-2 text-left">Size</th>
-              <th className="p-2 text-right">Pieces</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} className="border-t border-gray-100">
-                <td className="p-2">{row[0]}</td>
-                <td className="p-2">{row[1]}</td>
-                <td className="p-2 text-right">{row[2]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="bg-white rounded-md shadow-sm overflow-hidden">
+      <table className="w-full text-sm border border-gray-100">
+        <tbody>
+          <tr className="border-b border-gray-100">
+            <td className="w-1/3 p-3 font-semibold text-center border-r border-gray-100">
+              Part
+            </td>
+            <td className="p-3 text-center">{process.stylePartName}</td>
+          </tr>
+
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Ticket color / Vendor color
+            </td>
+            <td className="p-3 text-center">
+              {process.ticketColor}
+              {process.vendorColor && <span> / {process.vendorColor}</span>}
+            </td>
+          </tr>
+
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Size
+            </td>
+            <td className="p-3 text-center">{process.size}</td>
+          </tr>
+
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Pieces
+            </td>
+            <td className="p-3 text-center">{process.pieces}</td>
+          </tr>
+
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Operators
+            </td>
+            <td className="p-3 text-center">
+              {process.operators.length
+                ? process.operators.map((op) => op.name).join(", ")
+                : ""}
+            </td>
+          </tr>
+
+          <tr>
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Action
+            </td>
+            <td className="p-3 text-center">
+              <button
+                onClick={onMarkComplete}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded"
+              >
+                MARK COMPLETED
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+interface ProcessHistoryTableProps {
+  history: HistoryItem[];
+}
+
+export function ProcessHistoryTable({ history }: ProcessHistoryTableProps) {
+  if (!history.length) {
+    return (
+      <div className="text-center text-sm text-gray-400 py-4">
+        No history available
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-md shadow-sm overflow-x-auto">
+      <table className="w-full text-sm border border-gray-100">
+        <tbody>
+          {/* PART */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Part
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.stylePartName}
+              </td>
+            ))}
+          </tr>
+
+          {/* COLORS */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Ticket / Vendor
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.ticketColor}
+                {item.vendorColor && (
+                  <span> / {item.vendorColor}</span>
+                )}
+              </td>
+            ))}
+          </tr>
+
+          {/* SIZE */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Size
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.size}
+              </td>
+            ))}
+          </tr>
+
+          {/* PIECES */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Pieces
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.pieces}
+              </td>
+            ))}
+          </tr>
+
+          {/* OPERATORS */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Operators
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.operators.length
+                  ? item.operators.map((op) => op.name).join(", ")
+                  : "-"}
+              </td>
+            ))}
+          </tr>
+
+          {/* STATUS */}
+          <tr className="border-b border-gray-100">
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Status
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center capitalize border-r border-gray-100 last:border-r-0"
+              >
+                {item.status}
+              </td>
+            ))}
+          </tr>
+
+          {/* LOGGED AT */}
+          <tr>
+            <td className="p-3 font-semibold text-center border-r border-gray-100">
+              Logged at
+            </td>
+            {history.map((item) => (
+              <td
+                key={item.id}
+                className="p-3 text-center border-r border-gray-100 last:border-r-0"
+              >
+                {item.loggedAt.toLocaleString()}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -5,23 +5,8 @@ import { apiCall } from "@/app/api/apiConfig";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import CheckpointCard from "../../assign-checkpoint/page";
+import { TrackingStep } from "@/app/types/types";
 
-type TrackingStep = {
-  tracking_step_id: string;
-  type: string;
-  position: number;
-  assigned_operators: {
-    checker_id: string;
-    checker_name: string;
-  }[];
-  tracking_step_data: {
-    step?: string;
-    location?: string;
-    what_to_check?: string;
-    how_to_check?: string;
-    value?: string;
-  };
-};
 
 export default function AssignCheckerDetailPage() {
   const { vendor_order_id } = useParams<{ vendor_order_id: string }>();

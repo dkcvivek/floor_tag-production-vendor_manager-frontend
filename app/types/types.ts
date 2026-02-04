@@ -39,3 +39,21 @@ export type LoginResponseData = {
   role: string,
   token: string,
 };
+
+
+export type TrackingStep = {
+  tracking_step_id: string;
+  type: string;
+  position: number;
+  assigned_operators: {
+    checker_id: string;
+    checker_name: string;
+  }[];
+  tracking_step_data: {
+    step?: string;
+    location?: string;
+    what_to_check?: string;
+    how_to_check?: string;
+    value?: string;
+  };
+};

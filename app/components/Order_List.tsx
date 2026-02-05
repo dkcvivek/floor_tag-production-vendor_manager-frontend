@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Loader from "../components/Loader";
 
 type OrderListProps<T> = {
   orders: T[];
@@ -31,7 +32,7 @@ function Order_List<T>({
   error = null,
 }: OrderListProps<T>) {
   if (loading) {
-    return <p className="p-4 text-sm text-gray-500">Loading orders...</p>;
+    return <Loader fullscreen />;
   }
 
   if (error) {

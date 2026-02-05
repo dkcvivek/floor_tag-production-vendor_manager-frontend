@@ -4,6 +4,7 @@ import { apiCall } from "@/app/api/apiConfig";
 import Navbar from "@/app/components/Navbar";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Loader from "../../../components/Loader";
 
 const PARTS = ["Top", "Bottom", "Pair"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -152,7 +153,7 @@ export default function Page() {
     setModal("success");
   };
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading) return <Loader fullscreen />;
   if (error) return <p className="p-4 text-red-600">{error}</p>;
   if (!order) return null;
 

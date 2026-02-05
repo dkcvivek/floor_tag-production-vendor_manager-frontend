@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiCall } from "@/app/api/apiConfig";
 import { useParams } from "next/navigation";
+import Loader from "../../components/Loader";
 
 type TrackingStepData = {
   step?: string;
@@ -191,7 +192,7 @@ const CheckpointCard = ({ step }: Props) => {
             </button>
           </div>
 
-          {loading && <p className="text-sm">Loading checkers...</p>}
+          {loading && <Loader fullscreen />}
           {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </div>

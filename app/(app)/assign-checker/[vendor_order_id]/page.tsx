@@ -5,6 +5,7 @@ import { apiCall } from "@/app/api/apiConfig";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import CheckpointCard from "../../assign-checkpoint/page";
+import Loader from "../../../components/Loader";
 
 type TrackingStep = {
   tracking_step_id: string;
@@ -50,7 +51,7 @@ export default function AssignCheckerDetailPage() {
     }
   }, [vendor_order_id]);
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading) return <Loader fullscreen />;
   if (error) return <p className="p-4 text-red-600">{error}</p>;
 
   return (

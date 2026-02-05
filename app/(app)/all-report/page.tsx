@@ -6,11 +6,9 @@ import { useEffect, useState } from "react";
 import { apiCall } from "@/app/api/apiConfig";
 import { Style } from "@/app/types/types";
 import Order_List from "@/app/components/Order_List";
-import {
-  mapEligibleStylesToOrderUI,
-  OrderUIModel,
-} from "@/app/lib/mappers/order.maper";
+
 import Link from "next/link";
+import { mapEligibleStylesToOrderUI, OrderUIModel } from "./mapper/order.mapper";
 
 const data = [
   {
@@ -41,7 +39,7 @@ export default function SeeReportsPage() {
       try {
         const res = await apiCall<Style[]>(
           "GET",
-          "/api/vi/vendor-manager/vendor-orders/",
+          "/api/v1/vendor-manager/vendor-orders/",
         );
         const orders = mapEligibleStylesToOrderUI(res.data);
         setOrders(orders);
@@ -94,7 +92,7 @@ export default function SeeReportsPage() {
     <>
       <Navbar title="REPORTS" />
 
-      {/* <Order_List
+      <Order_List
         orders={orders}
         loading={loading}
         error={error}
@@ -105,9 +103,7 @@ export default function SeeReportsPage() {
         getQuantity={(item) => item.quantity}
         getStyleName={(item) => item.styleName}
         getButtonHref={(item) => `/see-reports}`}
-      /> */}
-
-      
+      />    
     </>
   );
 }

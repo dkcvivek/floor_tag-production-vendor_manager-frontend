@@ -14,7 +14,7 @@ function CreateChecker() {
   const [name, setName] = useState<string>("");
 
   const [otpStatus, setOtpStatus] = useState<boolean>(false);
-  const [isOtpCorrect, setIsOtpCorrect] = useState<boolean>();
+  const [isOtpCorrect, setIsOtpCorrect] = useState<boolean | null>(null);
 
   const [errors, setErrors] = useState<CreateCheckerFormError>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -81,7 +81,7 @@ function CreateChecker() {
   };
 
   if (isOtpCorrect) {
-    return <CreateCheckerSuccessPage />;
+    return <CreateCheckerSuccessPage name={name} />;
   }
 
   return (

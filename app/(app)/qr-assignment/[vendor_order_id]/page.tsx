@@ -106,7 +106,6 @@ export default function Page() {
   const [currentProcess, setCurrentProcess] = useState<Process | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<"success" | "error" | null>(null);
 
@@ -214,56 +213,6 @@ export default function Page() {
             <Select value={size} onChange={setSize} options={sizeOptions} />
           </Card>
 
-          <Card label="Assigned Checker:">
-            <div className="flex gap-2 flex-wrap">
-              {assignedCheckers.length === 0 && (
-                <p className="text-xs text-gray-500">
-                  No checkers assigned yet
-                </p>
-              )}
-
-              {assignedCheckers.map((c) => (
-                <span
-                  key={c.checker_id}
-                  className="flex items-center gap-1 bg-blue-500 text-white text-xs px-3 py-1 rounded-full"
-                >
-                  {c.checker_name}
-                  <button
-                    onClick={() => handleRemoveChecker(c)}
-                    disabled={actionLoading}
-                    className="ml-1"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-
-            <div className="flex gap-2 mt-2">
-              <select
-                value={selectedChecker}
-                onChange={(e) => setSelectedChecker(e.target.value)}
-                className="flex-1 h-9 rounded-md px-2 text-sm shadow-sm"
-                disabled={actionLoading}
-              >
-                <option value="">Select Checker</option>
-                {eligibleCheckers.map((c) => (
-                  <option key={c.checker_id} value={c.checker_id}>
-                    {c.checker_name}
-                  </option>
-                ))}
-              </select>
-
-              <button
-                onClick={handleAddChecker}
-                disabled={!selectedChecker || actionLoading}
-                className="px-3 h-9 rounded-md bg-blue-500 text-white text-xs font-semibold disabled:bg-gray-300"
-              >
-                ADD CHECKER
-              </button>
-            </div>
-          </Card>
-
           <button
             onClick={handleStart}
             className="w-full h-11 bg-blue-500 text-white font-semibold rounded-md shadow-md active:scale-[0.98]"
@@ -328,13 +277,6 @@ function Select({
         <option key={o}>{o}</option>
       ))}
     </select>
-  );
-}
-function Chip({ text }: { text: string }) {
-  return (
-    <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full shadow-sm">
-      {text} ×
-    </span>
   );
 }
 

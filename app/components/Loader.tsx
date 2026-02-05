@@ -1,17 +1,29 @@
 "use client";
 
-import React from "react";
+import { PulseLoader } from "react-spinners";
 
-export default function Loader() {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center">
-        <div className="h-16 w-16 rounded-full border-4 border-blue-500/30 border-t-blue-600 animate-spin" />
+type LoaderProps = {
+  fullscreen?: boolean;
+  size?: number;
+  color?: string;
+};
 
-        <span className="mt-2 ml-3 text-xl font-medium text-blue-600 translate-x-px">
-          Loading...
-        </span>
+export default function FetchDataWithLoader({
+  fullscreen = false,
+  size = 15,
+  color = "#1E90FF",
+}: LoaderProps) {
+  if (fullscreen) {
+    return (
+      <div className="min-h-dvh w-full flex items-center justify-center">
+        <PulseLoader color={color} size={size} />
       </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center">
+      <PulseLoader color={color} size={size} />
     </div>
   );
 }

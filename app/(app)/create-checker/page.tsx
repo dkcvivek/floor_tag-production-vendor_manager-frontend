@@ -7,6 +7,7 @@ import { handleMobileInput } from "@/app/lib/helper";
 import OtpModal from "@/app/components/OtpModal";
 import CreateCheckerSuccessPage from "@/app/components/create-checker-success";
 import { apiCall } from "@/app/api/apiConfig";
+import Loader from "../../components/Loader";
 
 function CreateChecker() {
   const [mobile, setMobile] = useState<string>("");
@@ -45,7 +46,7 @@ function CreateChecker() {
           phone_number: mobile,
         }),
         apiCall("POST", "/api/v1/vendor-manager/otp/send/", {
-          phone_number: mobile, 
+          phone_number: mobile,
         }),
       ]);
 
@@ -57,7 +58,6 @@ function CreateChecker() {
       setErrors({
         mobile: message,
       });
-
     } finally {
       setLoading(false);
     }
@@ -140,7 +140,7 @@ function CreateChecker() {
               disabled={!mobile || !name || loading}
               className="w-full py-3 text-lg font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "PLEASE WAIT..." : "Create Account"}
+              {loading ? <Loader size={6} color="#fff" /> : "Create Account"}
             </button>
           </div>
         </>

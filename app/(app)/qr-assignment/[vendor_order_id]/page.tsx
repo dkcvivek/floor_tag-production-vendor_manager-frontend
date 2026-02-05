@@ -15,6 +15,7 @@ import {
   Process,
   Style,
 } from "../mapper/assignmentQRsOrder.mapper";
+import Loader from "../../../components/Loader";
 
 // const DEFAULT_COLORS = ["Red", "Orange", "Blue", "Pink", "Black", "White"];
 
@@ -105,8 +106,8 @@ export default function Page() {
   const [currentProcess, setCurrentProcess] = useState<Process | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [modal, setModal] = useState<"success" | "error" | null>(null);
 
   useEffect(() => {
@@ -160,19 +161,19 @@ export default function Page() {
     : [];
 
   const handleStart = () => {
-    const isSuccess = Math.random() > 0.5;
-    setModal(isSuccess ? "success" : "error");
+    setModal("success");
   };
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading) return <Loader fullscreen />;
   if (error) return <p className="p-4 text-red-600">{error}</p>;
   if (!order) return null;
   return (
     <>
       <Navbar title="QR ASSIGNMENT PROCESS" />
 
+
       <div
-        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 transition-all pb-16 ${
+        className={`min-h-dvh w-full bg-[#f5f7fb] flex justify-center px-3 py-4 pb-16 ${
           modal ? "blur-sm" : ""
         }`}
       >
@@ -198,7 +199,7 @@ export default function Page() {
               <button
                 onClick={() => {
                   if (!colors.includes(customColor)) {
-                    setColors((prev) => [...prev, customColor]);
+                    setColors((p) => [...p, customColor]);
                     setColor(customColor);
                   }
                 }}
@@ -215,18 +216,48 @@ export default function Page() {
 
           <Card label="Assigned Checker:">
             <div className="flex gap-2 flex-wrap">
-              <Chip text="HRIDESH" />
-              <Chip text="SHIV KUMAR" />
+              {assignedCheckers.length === 0 && (
+                <p className="text-xs text-gray-500">
+                  No checkers assigned yet
+                </p>
+              )}
+
+              {assignedCheckers.map((c) => (
+                <span
+                  key={c.checker_id}
+                  className="flex items-center gap-1 bg-blue-500 text-white text-xs px-3 py-1 rounded-full"
+                >
+                  {c.checker_name}
+                  <button
+                    onClick={() => handleRemoveChecker(c)}
+                    disabled={actionLoading}
+                    className="ml-1"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
             </div>
 
             <div className="flex gap-2 mt-2">
-              <select className="flex-1 h-9 rounded-md px-2 text-sm shadow-sm">
-                <option>Select Checker</option>
+              <select
+                value={selectedChecker}
+                onChange={(e) => setSelectedChecker(e.target.value)}
+                className="flex-1 h-9 rounded-md px-2 text-sm shadow-sm"
+                disabled={actionLoading}
+              >
+                <option value="">Select Checker</option>
+                {eligibleCheckers.map((c) => (
+                  <option key={c.checker_id} value={c.checker_id}>
+                    {c.checker_name}
+                  </option>
+                ))}
               </select>
 
               <button
-                disabled
-                className="px-3 h-9 rounded-md bg-gray-200 text-gray-400 text-xs font-semibold"
+                onClick={handleAddChecker}
+                disabled={!selectedChecker || actionLoading}
+                className="px-3 h-9 rounded-md bg-blue-500 text-white text-xs font-semibold disabled:bg-gray-300"
               >
                 ADD CHECKER
               </button>
@@ -256,7 +287,6 @@ export default function Page() {
         </div>
       </div>
 
-      {/* MODALS */}
       {modal === "error" && <ErrorModal onClose={() => setModal(null)} />}
       {modal === "success" && <SuccessModal onClose={() => setModal(null)} />}
     </>
@@ -300,7 +330,6 @@ function Select({
     </select>
   );
 }
-
 function Chip({ text }: { text: string }) {
   return (
     <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full shadow-sm">
@@ -518,8 +547,8 @@ export function ProcessHistoryTable({ history }: ProcessHistoryTableProps) {
 function ErrorModal({ onClose }: { onClose: () => void }) {
   return (
     <ModalBase bg="bg-red-600" onClose={onClose}>
-      <p className="text-3xl font-bold text-center leading-snug">
-        Can not assign checker as he is on leave
+      <p className="text-2xl font-bold text-center">
+        Cannot assign checker (on leave)
       </p>
     </ModalBase>
   );
@@ -528,10 +557,7 @@ function ErrorModal({ onClose }: { onClose: () => void }) {
 function SuccessModal({ onClose }: { onClose: () => void }) {
   return (
     <ModalBase bg="bg-green-600" onClose={onClose}>
-      <div className="flex flex-col items-center justify-center text-center">
-        <p className="text-4xl font-bold mb-4">Assigning checker</p>
-        <p className="text-lg opacity-90">Loading...</p>
-      </div>
+      <p className="text-2xl font-bold text-center">Process Started</p>
     </ModalBase>
   );
 }
@@ -548,19 +574,14 @@ function ModalBase({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div
-        className={`${bg}
-        w-[90%] max-w-90 min-h-75
-        rounded-lg text-white p-6
-        relative
-        flex items-center justify-center`}
+        className={`${bg} w-[90%] max-w-90 min-h-60 rounded-lg text-white p-6 relative flex items-center justify-center`}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-2xl font-bold leading-none"
+          className="absolute top-4 right-4 text-2xl font-bold"
         >
           ×
         </button>
-
         {children}
       </div>
     </div>

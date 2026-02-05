@@ -1,6 +1,7 @@
 "use client";
 import Navbar from "@/app/components/Navbar";
 import { useState, useEffect } from "react";
+import Loader from "../../components/Loader";
 
 const PARTS = ["Top", "Bottom", "Pair"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -206,7 +207,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
     <ModalBase bg="bg-green-600" onClose={onClose}>
       <div className="flex flex-col items-center justify-center text-center">
         <p className="text-4xl font-bold mb-4">Assigning checker</p>
-        <p className="text-lg opacity-90">Loading...</p>
+        <Loader size={6} color="#fff" />
       </div>
     </ModalBase>
   );

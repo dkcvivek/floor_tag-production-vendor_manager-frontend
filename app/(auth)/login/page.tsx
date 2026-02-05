@@ -4,6 +4,7 @@ import { useState } from "react";
 import { apiCall } from "@/app/api/apiConfig";
 import { useRouter } from "next/navigation";
 import { LoginResponseData } from "@/app/types/types";
+import Loader from "../../components/Loader";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,7 +62,6 @@ export default function LoginPage() {
         },
       );
 
-      
       document.cookie = "auth=true; path=/";
       localStorage.setItem("access_token", res.data.token);
 
@@ -113,7 +113,7 @@ export default function LoginPage() {
             disabled={loading}
             className="mt-4 w-full h-11 rounded bg-[#1e90ff] text-white font-semibold disabled:opacity-60"
           >
-            {loading ? "Sending..." : "Send OTP"}
+            {loading ? <Loader size={6} color="#fff" /> : "Send OTP"}
           </button>
         )}
 
@@ -136,11 +136,21 @@ export default function LoginPage() {
                 disabled={loading}
                 className="flex-1 h-11 rounded bg-[#1e90ff] text-white font-semibold disabled:opacity-60"
               >
-                {loading ? "Verifying..." : "Submit"}
+                {loading ? <Loader size={6} color="#fff" /> : "Submit"}
               </button>
             </div>
 
-            <p className="text-red-500 mt-4">अपना <img className="inline-block mx-1" width={20}  height={20} src="/whatsapp-2.svg" alt="" /> Whats app या SMS/Message चेक' करे OTP के लिए </p>
+            <p className="text-red-500 mt-4">
+              अपना{" "}
+              <img
+                className="inline-block mx-1"
+                width={20}
+                height={20}
+                src="/whatsapp-2.svg"
+                alt=""
+              />{" "}
+              Whats app या SMS/Message चेक' करे OTP के लिए{" "}
+            </p>
 
             <div className="absolute bottom-10 left-5">
               <button

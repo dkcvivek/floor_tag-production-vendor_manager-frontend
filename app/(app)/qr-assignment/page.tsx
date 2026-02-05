@@ -12,6 +12,19 @@ type QROrder = {
   style_name: string;
 };
 
+const formatDate = (isoDate: string) => {
+  if (!isoDate) return "N/A";
+
+  return new Date(isoDate).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 export default function QRAssignmentPage() {
   const [orders, setOrders] = useState<QROrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +37,14 @@ export default function QRAssignmentPage() {
           "GET",
           "/api/v1/vendor-manager/assign-qrs/list-orders/",
         );
-        setOrders(res.data);
+
+        const sortedOrders = [...res.data].sort(
+          (a, b) =>
+            new Date(b.vendor_order_date).getTime() -
+            new Date(a.vendor_order_date).getTime(),
+        );
+
+        setOrders(sortedOrders);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -45,7 +65,7 @@ export default function QRAssignmentPage() {
         buttonLabel="Start QR Assignment Process"
         getKey={(item) => item.vendor_order_id}
         getTitle={(item) => `ORDER ID: ${item.vendor_order_id}`}
-        getDate={(item) => item.vendor_order_date}
+        getDate={(item) => formatDate(item.vendor_order_date)}
         getQuantity={(item) => item.vendor_order_quantity}
         getStyleName={(item) => item.style_name}
         getButtonHref={(item) => `/qr-assignment/${item.vendor_order_id}`}

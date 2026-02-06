@@ -16,6 +16,7 @@ function CreateChecker() {
   const [otpStatus, setOtpStatus] = useState<boolean>(false);
   const [isOtpCorrect, setIsOtpCorrect] = useState<boolean | null>(null);
 
+
   const [errors, setErrors] = useState<CreateCheckerFormError>({});
   const [loading, setLoading] = useState<boolean>(false);
 

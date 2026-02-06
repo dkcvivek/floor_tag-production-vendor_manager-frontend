@@ -9,7 +9,7 @@ import Loader from "../../components/Loader";
 export default function LoginPage() {
   const router = useRouter();
 
-  const [phone, setPhone] = useState("5042302851");
+  const [phone, setPhone] = useState("6712708275");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(true);
   const [loading, setLoading] = useState(false);
